@@ -7,6 +7,7 @@
     :collapse="bool"
     active-text-color="#66b1ff"
     :collapse-transition="false"
+    unique-opened
     router
   >
       <!-- @open="handleOpen"

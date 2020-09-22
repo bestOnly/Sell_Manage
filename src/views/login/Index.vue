@@ -34,9 +34,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')"
-            >登录</el-button
-          >
+          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
           <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
         </el-form-item>
       </el-form>
@@ -45,7 +43,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { login } from '@/api/account/account.js'
+
 export default {
   data() {
     return {
@@ -81,27 +80,31 @@ export default {
       this.flagEye = !this.flagEye
     },
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          this.$message({
-            message: '恭喜你，登录成功',
-            type: 'success',
-            duration: 2000
+          const { code, token } = await login({
+            account: this.loginForm.uname,
+            password: this.loginForm.password
           })
+          if (code === 0) {
+            // this.$message({
+            //   message: msg,
+            //   type: 'success',
+            //   duration: 1000
+            // })
+            localStorage.setItem('token', token)
+            sessionStorage.setItem('admin', this.loginForm.uname)
+            setTimeout(() => {
+              this.$router.push('/')
+            }, 1000)
+          } else if (code === 1) {
+            // this.$message.error(msg)
+            return false
+          }
         } else {
-          this.$message.error('验证失败，请重试~')
-          return false
+          this.$message.error('登录失败')
         }
       })
-
-      axios
-        .post('http://127.0.0.1:5000/users/checkLogin', {
-          account: this.loginForm.uname,
-          password: this.loginForm.password
-        })
-        .then(str => {
-          console.log(str)
-        })
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
@@ -113,7 +116,6 @@ export default {
 <style lang="less" scoped>
 .login-box {
   height: 100%;
-  // background-color: cadetblue;
   background-color: rgb(0, 107, 110);
   display: flex;
   justify-content: center;

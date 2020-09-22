@@ -8,33 +8,36 @@
       >{{ item.title }}</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="right-slide">
-      <el-dropdown trigger="click">
+      <el-dropdown trigger="click" @command="ownManage">
         <span class="el-dropdown-link">
-          欢迎你，亲爱的admin
+          欢迎你，亲爱的 <span class="name"> {{ admin }}</span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-plus" command='a'>个人中心</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-circle-plus" command='b'>账户管理</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-circle-plus-outline" command='c'>注销</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <img src="../../assets/img/man-icon.jpg" alt />
+      <img src="../../assets/img/man-icon.jpg" alt @click="toCenter"/>
     </div>
   </div>
 </template>
 
 <script>
+import local from '@/utils/local.js'
 export default {
   data() {
     return {
-      breadList: []
+      breadList: [],
+      admin: sessionStorage.getItem('admin')
     }
   },
   created() {
     this.calRoute()
   },
   methods: {
+    /* 面包屑导航 */
     calRoute() {
       // console.log(this.$route.matched)
       const arr = [{ title: '首页', path: '/dashboard' }]
@@ -44,6 +47,19 @@ export default {
         }
       })
       this.breadList = arr
+    },
+    /* 下拉栏操作 */
+    ownManage(command) {
+      if (command === 'a') {
+        this.$router.push('/account/myCenter')
+      } else if (command === 'c') {
+        local.clear()
+        this.$router.push('/login')
+      }
+    },
+    /* 点击头像跳转个人中心 */
+    toCenter() {
+      this.$router.push('/account/myCenter')
     }
   },
 
@@ -70,9 +86,14 @@ export default {
     border-radius: 50%;
     margin-left: 10px;
     margin-right: 10px;
+    cursor: pointer;
   }
   .el-dropdown {
     margin-right: 10px;
+    cursor: pointer;
+  }
+  .name{
+    color: rgb(72, 210, 245);
   }
 }
 </style>

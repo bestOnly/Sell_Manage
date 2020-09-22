@@ -22,8 +22,12 @@
             <el-input type="password" v-model="pwdForm.comfirmPwd"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
-            <el-button type="info" @click="resetForm('ruleForm')">重置</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')"
+              >确定</el-button
+            >
+            <el-button type="info" @click="resetForm('ruleForm')"
+              >重置</el-button
+            >
           </el-form-item>
         </el-form>
       </template>
@@ -34,6 +38,7 @@
 <script>
 import panel from '../../components/panel/Index'
 import { pwdReg } from '@/utils/validate'
+import { oldPwdReg, updatePwd } from '@/api/account/account.js'
 
 export default {
   components: {
@@ -41,7 +46,7 @@ export default {
   },
   data() {
     // 密码验证
-    var validatePass = (rule, value, callback) => {
+    var validatePass = async (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else if (!pwdReg.test(value)) {
@@ -51,6 +56,16 @@ export default {
         if (this.pwdForm.comfirmPwd !== '') {
           this.$refs.ruleForm.validateField('comfirmPwd')
         }
+        const data = await oldPwdReg({
+          oldPwd: this.pwdForm.password
+        })
+        console.log(data)
+        if (data.code === '11') {
+          this.$message.error('原密码错误')
+        } else {
+          this.$message.success('原密码正确')
+        }
+
         callback()
       }
     }
@@ -82,9 +97,15 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          this.$message.success('添加成功')
+          const data = await updatePwd({
+            newPwd: this.pwdForm.comfirmPwd
+          })
+          console.log(data)
+          console.log(this.pwdForm.comfirmPwd)
+          // this.$message.success('添加成功')
+          this.$refs[formName].resetFields()
         } else {
           this.$message.error('账户或密码出现问题哦~')
           return false

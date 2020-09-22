@@ -8,11 +8,11 @@ import './assets/css/reset.css'
 import './assets/css/index.css'
 import echarts from 'echarts'
 import axios from 'axios'
-import VueAxios from 'vue-axios'
+// import VueAxios from 'vue-axios'
 
-Vue.prototype.$axios = axios
+Vue.prototype.$http = axios
 Vue.prototype.$echarts = echarts
-Vue.use(axios, VueAxios)
+// Vue.use(axios)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 

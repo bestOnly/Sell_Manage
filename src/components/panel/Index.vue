@@ -1,4 +1,5 @@
 <template>
+     <!-- 公共子组件插槽  用于存放父组件的相应页面 -->
     <el-card>
      <div class="title">
        <slot name="title"></slot>

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from '../layout/Index.vue'
+import local from '@/utils/local.js'
 
 Vue.use(VueRouter)
 
@@ -125,6 +126,15 @@ const routes = [
               import(
                 /* webpackchunkName: "login" */ '../views/account/updatePwd.vue'
               )
+          },
+          {
+            path: '/account/myCenter',
+            meta: { title: '个人中心' },
+            // 懒加载
+            component: () =>
+              import(
+                /* webpackchunkName: "login" */ '../views/account/myCenter.vue'
+              )
           }
         ]
       },
@@ -174,3 +184,24 @@ const router = new VueRouter({
 })
 
 export default router
+/*
+  导航守卫
+*/
+router.beforeEach((to, from, next) => {
+  const token = local.get('token')
+  if (token) {
+    next()
+  } else {
+    if (to.path === '/login') {
+      next()
+    } else {
+      next('/login')
+    }
+  }
+})
+
+// 解决导航重复点击报错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
