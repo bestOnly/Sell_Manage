@@ -56,3 +56,9 @@ export function updatePwd(pwd) {
 export function MyCenter() {
   return request.get('/users/info')
 }
+/*
+   修改头像
+*/
+export function editPic(url) {
+  return request.get('/users/avataredit', url)
+}

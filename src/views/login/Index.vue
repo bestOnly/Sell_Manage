@@ -13,7 +13,7 @@
         <el-form-item label="账号" prop="uname">
           <el-input
             type="text"
-            prefix-icon="iconfont icon-yonghu"
+            prefix-icon="iconfont icon-zhanghuffffffpx"
             v-model="loginForm.uname"
             autocomplete="off"
           ></el-input>
@@ -21,14 +21,14 @@
         <el-form-item label="密码" prop="password">
           <el-input
             :type="flagEye ? 'password' : 'text'"
-            prefix-icon="iconfont icon-mima"
+            prefix-icon="iconfont icon-ai-password"
             v-model="loginForm.password"
             autocomplete="off"
           >
             <i
               slot="suffix"
               class="iconfont"
-              :class="flagEye ? 'icon-eyes' : 'icon-eyes-'"
+              :class="flagEye ? 'icon-yanjing_bi' : 'icon-yanjing'"
               @click="toggleEye"
             ></i>
           </el-input>
@@ -44,6 +44,8 @@
 
 <script>
 import { login } from '@/api/account/account.js'
+import local from '../../utils/local'
+import { createRoute } from '../../router/index'
 
 export default {
   data() {
@@ -82,7 +84,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const { code, token } = await login({
+          const { code, token, role } = await login({
             account: this.loginForm.uname,
             password: this.loginForm.password
           })
@@ -92,7 +94,9 @@ export default {
             //   type: 'success',
             //   duration: 1000
             // })
-            localStorage.setItem('token', token)
+            local.set('token', token)
+            local.set('role', role)
+            createRoute()
             sessionStorage.setItem('admin', this.loginForm.uname)
             setTimeout(() => {
               this.$router.push('/')

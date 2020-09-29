@@ -1,10 +1,10 @@
 <template>
   <ul class="data-box">
-    <li v-for="item in CardList" :key="item.id">
+    <li v-for="item in detailList" :key="item.id">
       <i :class="'iconfont '+item.icon+' '+item.cls" ></i>
       <div class="detail">
         <span>{{ item.uname }}</span>
-        <p>{{ item.num }}</p>
+        <p>{{ echartsNum[item.num] }}</p>
       </div>
     </li>
   </ul>
@@ -13,13 +13,19 @@
 <script>
 export default {
   props: {
-    CardList: {
-      type: Array,
-      default: () => []
+    echartsNum: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
+      detailList: [
+        { id: 1, uname: '总订单', icon: 'icon-weibiaoti--', num: 'totalOrder', cls: 'one' },
+        { id: 2, uname: '总销售额', icon: 'icon-meiyuan7', num: 'totalAmount', cls: 'two' },
+        { id: 3, uname: '今日订单数', icon: 'icon-dingdan', num: 'todayOrder', cls: 'three' },
+        { id: 4, uname: '今日销售额', icon: 'icon-jinqian', num: 'totayAmount', cls: 'four' }
+      ]
     }
   }
 }

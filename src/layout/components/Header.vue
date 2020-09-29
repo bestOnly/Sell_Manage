@@ -10,31 +10,37 @@
     <div class="right-slide">
       <el-dropdown trigger="click" @command="ownManage">
         <span class="el-dropdown-link">
-          欢迎你，亲爱的 <span class="name"> {{ admin }}</span>
+          欢迎你，亲爱的
+          <span class="name">{{ admin }}</span>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-plus" command='a'>个人中心</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-circle-plus" command='b'>账户管理</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-circle-plus-outline" command='c'>注销</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-plus" command="a">个人中心</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-circle-plus" command="b">账户管理</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-circle-plus-outline" command="c">注销</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <img src="../../assets/img/man-icon.jpg" alt @click="toCenter"/>
+      <img :src="userInfo.imgUrl" alt @click="toCenter" />
     </div>
   </div>
 </template>
 
 <script>
 import local from '@/utils/local.js'
+import { MyCenter } from '@/api/account/account.js'
 export default {
+  async created() {
+    this.calRoute()
+
+    const { accountInfo } = await MyCenter()
+    this.userInfo = accountInfo
+  },
   data() {
     return {
       breadList: [],
+      userInfo: {},
       admin: sessionStorage.getItem('admin')
     }
-  },
-  created() {
-    this.calRoute()
   },
   methods: {
     /* 面包屑导航 */
@@ -76,13 +82,15 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 10px;
 
   .right-slide {
     display: flex;
     align-items: center;
   }
   img {
-    width: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     margin-left: 10px;
     margin-right: 10px;
@@ -92,7 +100,7 @@ export default {
     margin-right: 10px;
     cursor: pointer;
   }
-  .name{
+  .name {
     color: rgb(72, 210, 245);
   }
 }

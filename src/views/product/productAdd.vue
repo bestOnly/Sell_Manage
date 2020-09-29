@@ -4,63 +4,37 @@
       <template #title>商品添加</template>
       <template #content>
         <div class="innerBox">
-        <span>图片</span>
-        <div class="block">
-          <span class="demonstration">{{ fit }}</span>
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="url"
-            :fit="fit"
-          ></el-image>
-        </div>
         <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="配送费">
+          <el-form-item label="商品名称">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-           <el-form-item label="配送时间">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item label="商品分类">
+            <el-select v-model="form.category" placeholder="请选择商品分类">
+              <el-option v-for="item in cateSelect" :key="item.id" :label="item.cateName" :value="item.cateName"></el-option>
+            </el-select>
           </el-form-item>
-           <el-form-item label="配送描述">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item label="商品价格">
+             <el-input-number v-model="form.price" @change="handleChange" :min="1" :max="20" label="描述文字"></el-input-number>
           </el-form-item>
-           <el-form-item label="店铺评分">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item label="商品图片">
+            <el-upload
+              class="avatar-uploader"
+              action="http://127.0.0.1:5000/goods/goods_img_upload"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </el-form-item>
-           <el-form-item label="销量">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="活动">
-            <el-checkbox-group v-model="form.type">
-              <el-checkbox label="在线支付满28减5" name="type"></el-checkbox>
-              <el-checkbox label="VC无线橙果汁全场8折" name="type"></el-checkbox>
-              <el-checkbox label="特价饮品8折抢购" name="type"></el-checkbox>
-              <el-checkbox label="单人特色套餐" name="type"></el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item label="营业时间">
-            <el-col :span="11">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="form.date1"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-time-picker
-                placeholder="选择时间"
-                v-model="form.date2"
-                style="width: 100%;"
-              ></el-time-picker>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="即时配送">
-            <el-switch v-model="form.delivery"></el-switch>
+
+          <el-form-item label="商品描述">
+            <el-input type="textarea" v-model="form.goodsDesc"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即添加</el-button>
-            <el-button>取消</el-button>
+            <el-button type="primary" @click="onSubmit">添加商品</el-button>
+            <el-button @click="cancel">取消</el-button>
           </el-form-item>
         </el-form>
         </div>
@@ -71,29 +45,74 @@
 
 <script>
 import panel from '../../components/panel/Index'
+import { cateList, addGoods } from '@/api/product/product.js'
 export default {
+  created() {
+    this.cateList()
+  },
   components: {
     panel
   },
   data() {
     return {
       fits: ['cover'],
-      url: '../../assets/img/mouth.png',
+      url: '',
+      imageUrl: '',
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      }
+        category: '',
+        saveUrl: '',
+        price: 1,
+        goodsDesc: ''
+      },
+      cateSelect: []
     }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
+    async cateList() {
+      const { data } = await cateList({
+        currentPage: 1,
+        pageSize: 100
+      })
+      this.cateSelect = data
+      console.log(data)
+    },
+    // 商品添加
+    async onSubmit() {
+      const data = await addGoods({
+        name: this.form.name,
+        category: this.form.category,
+        price: this.form.price,
+        imgUrl: this.form.saveUrl,
+        goodsDesc: this.form.goodsDesc
+      })
+      this.$refs.form.resetFields()
+      this.$router.push('/product/list')
+      console.log(data)
+    },
+    cancel() {
+      this.$refs.form.resetFields()
+    },
+    handleChange(value) {
+      // console.log(value)
+    },
+    // 图片相关
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+      this.form.saveUrl = res.imgUrl
+      // console.log(this.imageUrl)
+    },
+    beforeAvatarUpload(file) {
+      const arr = ['image/jpg', 'image/jpeg', 'image/png']
+      const isJPG = arr.includes(file.type)
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     }
   }
 }
@@ -103,6 +122,28 @@ export default {
 .innerBox {
   width: 40%;
   height: 100%;
-  // background-color: #eee;
+}
+/deep/ .avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>您无权访问此页面</h1>
   </div>
 </template>
 
@@ -8,4 +9,9 @@ export default {}
 </script>
 
 <style lang="less" scoped>
+h1{
+  font-size: 50px;
+  color: red;
+  text-align: center;
+}
 </style>

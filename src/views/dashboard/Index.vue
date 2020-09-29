@@ -1,28 +1,71 @@
 <template>
   <div>
-    <Card :CardList='detailList' />
-    <Echarts />
+    <Card :echartsNum="sondata" />
+    <!-- <Echarts @getOpt="getOpt">
+       <template #eChartsOpt>
+        <div id="myChart" :style="{ width: '1270px', height: '520px' }"></div>
+       </template>
+    </Echarts> -->
+    <Echarts :getCharts="charts"/>
   </div>
 </template>
 
 <script>
 import Card from '../dashboard/components/Card'
 import Echarts from '../dashboard/components/Echarts'
-
+import { HomeInfo } from '@/api/index'
 export default {
+  mounted() {
+    // 加载echarts
+    this.showData()
+  },
   components: {
     Card,
     Echarts
   },
   data() {
     return {
-      detailList: [
-        { id: 1, uname: '总订单', icon: 'icon-weibiaoti--', num: '10,241', cls: 'one' },
-        { id: 2, uname: '总销售额', icon: 'icon-meiyuan7', num: '10,241', cls: 'two' },
-        { id: 3, uname: '今日订单数', icon: 'icon-dingdan', num: '10,241', cls: 'three' },
-        { id: 4, uname: '今日销售额', icon: 'icon-jinqian', num: '10,241', cls: 'four' }
-      ]
+      sondata: {},
+      // opt: {}
+      charts: {}
     }
+  },
+  methods: {
+    async showData() {
+      const {
+        todayOrder,
+        totalAmount,
+        totalOrder,
+        totayAmount,
+        xData,
+        orderData,
+        amountData
+      } = await HomeInfo()
+      // this.sondata = data
+      this.sondata = {
+        todayOrder,
+        totalAmount,
+        totalOrder,
+        totayAmount
+      }
+      // 传到子组件
+      this.charts = {
+        xData,
+        orderData,
+        amountData
+      }
+      // console.log(xData)
+      // this.opt.xAxis.data = xData
+      // this.opt.series[0].data = orderData
+      // this.opt.series[1].data = amountData
+      // // 绘制图表
+      // myChart.setOption(this.opt)
+    }
+    // 获取子组件传来的数据
+    // getOpt(o) {
+    //   this.opt = o
+    //   console.log(o)
+    // }
   }
 }
 </script>

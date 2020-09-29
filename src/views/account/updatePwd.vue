@@ -22,12 +22,8 @@
             <el-input type="password" v-model="pwdForm.comfirmPwd"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')"
-              >确定</el-button
-            >
-            <el-button type="info" @click="resetForm('ruleForm')"
-              >重置</el-button
-            >
+            <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
+            <el-button type="info" @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
         </el-form>
       </template>
@@ -45,6 +41,22 @@ export default {
     panel
   },
   data() {
+    var validateOld = async (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        const data = await oldPwdReg({
+          oldPwd: this.pwdForm.password
+        })
+        if (data.code === '00') {
+          // this.$message.success('原密码正确')
+          callback()
+        } else {
+          this.$message.error('原密码错误')
+        }
+      }
+    }
+
     // 密码验证
     var validatePass = async (rule, value, callback) => {
       if (value === '') {
@@ -56,16 +68,6 @@ export default {
         if (this.pwdForm.comfirmPwd !== '') {
           this.$refs.ruleForm.validateField('comfirmPwd')
         }
-        const data = await oldPwdReg({
-          oldPwd: this.pwdForm.password
-        })
-        console.log(data)
-        if (data.code === '11') {
-          this.$message.error('原密码错误')
-        } else {
-          this.$message.success('原密码正确')
-        }
-
         callback()
       }
     }
@@ -85,9 +87,7 @@ export default {
         comfirmPwd: ''
       },
       rules: {
-        password: [
-          { validator: validatePass, required: true, trigger: 'blur' }
-        ],
+        password: [{ validator: validateOld, required: true, trigger: 'blur' }],
         newPwd: [{ validator: validatePass, required: true, trigger: 'blur' }],
         comfirmPwd: [
           { validator: validatePass2, required: true, trigger: 'blur' }
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(async valid => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
           const data = await updatePwd({
             newPwd: this.pwdForm.comfirmPwd

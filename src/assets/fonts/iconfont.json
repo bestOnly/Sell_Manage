@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "8224812",
+      "name": "眼睛_闭",
+      "font_class": "yanjing_bi",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "8361830",
+      "name": "眼睛",
+      "font_class": "yanjing",
+      "unicode": "e6cc",
+      "unicode_decimal": 59084
+    },
+    {
       "icon_id": "1504355",
       "name": "下载",
       "font_class": "xiazai",

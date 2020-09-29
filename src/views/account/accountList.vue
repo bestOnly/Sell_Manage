@@ -16,26 +16,14 @@
           <el-table-column prop="account" label="账户" width="150">
             <!-- <template slot-scope="scope">{{ scope.row.admin }}</template> -->
           </el-table-column>
-          <el-table-column
-            prop="userGroup"
-            label="用户类型"
-            width="150"
-          ></el-table-column>
-          <el-table-column label="创建时间" width="200">
-            <template v-slot="{ row }">
-              {{ row.ctime | dCreateTime }}
-            </template>
+          <el-table-column prop="userGroup" label="用户类型" width="150"></el-table-column>
+          <el-table-column label="创建时间" width="300">
+            <template v-slot="{ row }">{{ row.cTime | dCreateTime }}</template>
           </el-table-column>
-          <el-table-column
-            prop="imgUrl"
-            label="用户头像"
-            width="180"
-          ></el-table-column>
+          <el-table-column prop="imgUrl" label="用户头像" width="180"></el-table-column>
           <el-table-column prop="manage" label="操作">
             <template v-slot="{ row }">
-              <el-button type="primary" @click="openUpdate(row)"
-                >编辑</el-button
-              >
+              <el-button type="primary" @click="openUpdate(row)">编辑</el-button>
               <el-button type="danger" @click="delUser(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -50,12 +38,11 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
+          background
         ></el-pagination>
         <div style="margin-top: 20px">
           <el-button type="danger" @click="delSome">批量删除</el-button>
-          <el-button type="primary" @click="toggleSelection()"
-            >取消选择</el-button
-          >
+          <el-button type="primary" @click="toggleSelection()">取消选择</el-button>
         </div>
         <!-- 模态框 -->
         <el-dialog title="编辑账户" :visible.sync="dialogFormVisible">
@@ -64,10 +51,7 @@
               <el-input v-model="modUser.name" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="用户类型" :label-width="formLabelWidth">
-              <el-select
-                v-model="modUser.userGroup"
-                placeholder="请选择用户类型"
-              >
+              <el-select v-model="modUser.userGroup" placeholder="请选择用户类型">
                 <el-option label="普通管理员" value="普通管理员"></el-option>
                 <el-option label="超级管理员" value="超级管理员"></el-option>
               </el-select>
@@ -86,6 +70,7 @@
 
 <script>
 import panel from '../../components/panel/Index'
+import dCreateTime from '@/utils/validateTime'
 import {
   userList,
   delAccount,
@@ -93,7 +78,7 @@ import {
   updateUser
 } from '@/api/account/account.js'
 export default {
-  async created() {
+  created() {
     this.getData()
   },
   components: {
@@ -135,7 +120,7 @@ export default {
         pageSize: this.pageSize
       })
       this.tableData = []
-      data.forEach(item => {
+      data.forEach((item) => {
         this.tableData.push({
           account: item.account,
           userGroup: item.userGroup,
@@ -191,19 +176,21 @@ export default {
     },
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.$refs.multipleTable.toggleRowSelection(row)
         })
       } else {
         this.$refs.multipleTable.clearSelection()
       }
     },
+    // 保存点击的数据
     handleSelectionChange(val) {
       this.multipleSelection = val
-      val.forEach(item => {
+      val.forEach((item) => {
         this.check.push(item.id)
       })
     },
+    // 批量删除
     async delSome() {
       console.log(this.check)
       this.$confirm('亲，你要想清楚', '提示', {
@@ -229,28 +216,7 @@ export default {
     }
   },
   filters: {
-    dCreateTime(value) {
-      var date = new Date(value)
-      var Y = date.getFullYear()
-      var M = (date.getMonth() + 1).toString().padStart(2, 0)
-      var D = date
-        .getDate()
-        .toString()
-        .padStart(2, 0)
-      var h = date
-        .getHours()
-        .toString()
-        .padStart(2, 0)
-      var m = date
-        .getMinutes()
-        .toString()
-        .padStart(2, 0)
-      var s = date
-        .getSeconds()
-        .toString()
-        .padStart(2, 0)
-      return Y + M + D + h + m + s
-    }
+    dCreateTime
   }
 }
 </script>
@@ -259,14 +225,8 @@ export default {
 /deep/ .el-table__header-wrapper .el-table__header {
   .has-gutter {
     th {
-      // transform: translate(12%);
       font-weight: 700;
     }
   }
-}
-.el-pagination {
-  margin: 20px 0;
-  margin-left: 50%;
-  transform: translate(-50%);
 }
 </style>

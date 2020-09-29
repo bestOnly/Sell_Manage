@@ -1,14 +1,26 @@
 <template>
-  <div id="myChart" :style="{ width: '1280px', height: '500px' }"></div>
+  <!-- <div> -->
+    <!-- 第一种通过插槽实现 父组件不含结构-->
+    <!-- <slot name="eChartsOpt"></slot> -->
+    <!-- 第二种通过父子传值实现 -->
+    <div id="myChart" :style="{ width: '1270px', height: '520px' }"></div>
+  <!-- </div> -->
 </template>
 
 <script>
 export default {
-  mounted() {
-    const myChart = this.$echarts.init(document.getElementById('myChart'))
-    // 绘制图表
-    myChart.setOption(
-      ({
+  props: {
+    getCharts: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  created() {
+    // this.$emit('getOpt', this.option)
+  },
+  data() {
+    return {
+      option: {
         title: {
           text: '今日数据统计'
         },
@@ -16,7 +28,7 @@ export default {
           trigger: 'axis'
         },
         legend: {
-          data: ['订单', '销售额', '注册人数', '管理员人数']
+          data: ['订单', '销售额']
         },
         grid: {
           left: '3%',
@@ -32,7 +44,7 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: []
         },
         yAxis: {
           type: 'value'
@@ -42,35 +54,39 @@ export default {
             name: '订单',
             type: 'line',
             stack: '总量',
-            data: [120, 132, 101, 134, 90, 230, 210]
+            data: []
           },
           {
             name: '销售额',
             type: 'line',
             stack: '总量',
-            data: [220, 182, 191, 234, 290, 330, 310]
-          },
-          {
-            name: '注册人数',
-            type: 'line',
-            stack: '总量',
-            data: [150, 232, 201, 154, 190, 330, 410]
-          },
-          {
-            name: '管理员人数',
-            type: 'line',
-            stack: '总量',
-            data: [320, 332, 301, 334, 390, 330, 320]
+            data: []
           }
         ]
-      })
-    )
+      }
+    }
+  },
+  methods: {
+    render() {
+      const myChart = this.$echarts.init(document.getElementById('myChart'))
+      // 将charts数据 放在监听中
+      myChart.setOption(this.option)
+    }
+  },
+  watch: {
+    // 监听传来的数据的变化 （因为数据是要在请求完成后得到的，有可能页面出来还没有数据，所以监听该对象获取到后开始渲染echarts）
+    getCharts() {
+      this.option.xAxis.data = this.getCharts.xData
+      this.option.series[0].data = this.getCharts.orderData
+      this.option.series[1].data = this.getCharts.amountData
+      this.render()
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-#myChart{
+#myChart {
   background-color: #fff;
   margin: 30px 0 0 10px;
   padding: 20px;
