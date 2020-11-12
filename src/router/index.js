@@ -35,7 +35,7 @@ const syncRouter = [
   {
     path: '/',
     name: 'Index',
-    meta: { title: '后台首页' },
+    // meta: { title: '后台首页' },
     component: Index,
     redirect: '/dashboard',
     children: [
@@ -71,7 +71,7 @@ const syncRouter = [
             meta: { title: '修改订单' },
             // 设置props 为true 可以通过props 获取传来的参数
             props: true,
-            visible: true,
+            // visible: true,
             // 懒加载
             component: () =>
               import(
